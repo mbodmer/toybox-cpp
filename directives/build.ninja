@@ -3,17 +3,17 @@ ninja_required_version = 1.1
 builddir = build
 appname  = directives
 
-includes = 
-libs     = 
+includes =
+libs     =
 
 ccflags  = -g -Wall -Wextra -std=c++11
-ldflags  = 
+ldflags  =
 
 rule cc
-  command = clang++ $cflags $includes $ldflags $libs $in -o $out
+  command = clang++ $ccflags $includes $ldflags $libs $in -o $out
   description = clang
 
-build $builddir/$appname: cc main.cpp
+build $builddir/$appname: cc $appname.cpp
 
 build all: phony $builddir/$appname
 default all

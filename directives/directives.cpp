@@ -16,7 +16,8 @@
 struct Message {
   std::string destination;
   std::string source;
-  Message() : destination("empty"), source("empty") {}
+  uint64_t    id;
+  Message() : destination("empty"), source("empty"), id(0ULL) {}
 };
 
 // In cpp-netlib the directives are simple function objects that take a target
@@ -44,6 +45,17 @@ struct source_directive {
     }
 };
 
+struct id_directive {
+    const uint64_t& value;
+    explicit id_directive(const uint64_t& id) : value(id) {}
+    id_directive(const id_directive& other) : value(other.value) {}
+    template <class Input> Input& operator()(Input& input) const {
+        // do something to Input
+        input.id = value;
+        return input;
+    }
+};
+
 // To simplify directive creation, usually factory or generator functions are
 // defined to return concrete objects of the directive’s type.
 inline const destination_directive destination(const std::string& value) {
@@ -52,6 +64,10 @@ inline const destination_directive destination(const std::string& value) {
 
 inline const source_directive source(const std::string& value) {
     return source_directive(value);
+}
+
+inline const id_directive id(const uint64_t& value) {
+    return id_directive(value);
 }
 
 
@@ -68,7 +84,7 @@ inline Message& operator<<(Message& msg, const Directive& directive) {
 // attention. Adding this layer of indirection also allows for changing the
 // underlying implementations while maintaining the same syntactic and semantic
 // properties.
-// 
+//
 // Flexibility - by allowing the creation of directives that are independent
 // from the target object’s type, generic operations can be applied based on the
 // concept being modeled by the target type. The flexibility also afforded comes
@@ -92,11 +108,12 @@ inline Message& operator<<(Message& msg, const Directive& directive) {
 int main() {
     Message msg;
     msg << source("me")
-        << destination("you");
+        << destination("you")
+        << id(47ULL);
 
     std::cout << "message.source: " << msg.source << std::endl;
     std::cout << "message.destination: " << msg.destination << std::endl;
+    std::cout << "message.id: " << msg.id << std::endl;
 
     return 0;
 }
-

@@ -1,0 +1,19 @@
+ninja_required_version = 1.1
+
+builddir = build
+appname  = reinterpret_cast_vector_as_register
+
+includes =
+libs     =
+
+ccflags  = -g -Wall -Wextra -std=c++11
+ldflags  =
+
+rule cc
+  command = clang++ $ccflags $includes $ldflags $libs $in -o $out
+  description = clang
+
+build $builddir/$appname: cc $appname.cpp
+
+build all: phony $builddir/$appname
+default all
